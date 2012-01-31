@@ -1,0 +1,114 @@
+<canvas id="canvas" width="214" height="214"></canvas>
+    <div id="response"></div>
+
+<script type="text/javascript">
+    var COLS = 3;
+    var ROWS = 3;
+    var grid;
+    var WIDTH;
+    var HEIGHT;
+    var SQUAREWIDTH = 70;
+    var SQUAREHEIGHT = 70;
+    var PADDING = 1;
+    var rowcolours = ["0000FF", "00ff00", "ff0000"];
+    var bgcolour = "ffffff";
+    var canvasMinX = 0;
+    var canvasMaxX = 0;
+    var canvasMinY = 0;
+    var canvasMaxY = 0;
+    var mouseX;
+    var mouseY;
+    var out = "";
+    
+    function init() {
+        ctx = $("#canvas")[0].getContext("2d");
+        WIDTH = $("#canvas").width();
+        HEIGHT = $("#canvas").height();
+        canvasMinX = $("#canvas").offset().left;
+        canvasMaxX = canvasMinX + WIDTH;
+        canvasMinY = $("#canvas").offset().top;
+        canvasMaxY = canvasMinY + HEIGHT;
+        intervalId = setInterval(draw, 10);
+        return intervalId;
+    }
+    
+    function rect(x,y,w,h) {
+        ctx.beginPath();
+        ctx.rect(x,y,w,h);
+        ctx.closePath();
+        ctx.fill();
+    }
+    
+    function circle(x,y,r) {
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI*2, true);
+        ctx.closePath();
+        ctx.fill();
+    }
+    
+    function clear() {
+        ctx.fillStyle = bgcolour;
+        ctx.clearRect(0, 0, WIDTH, HEIGHT);
+        rect(0, 0, WIDTH, HEIGHT);
+    }
+    
+    function initgrid() {
+        grid = new Array(ROWS);
+        for(i = 0; i <= ROWS; i++) {
+            grid[i] = new Array(COLS);
+            for(j = 0; j <= COLS; j++) {
+                grid[i][j] = 0;
+            }
+        }
+    }
+    
+    function drawgrid() {
+        for(i = 0; i < ROWS; i++) {
+            // ctx.fillStyle = rowcolours[i];
+            for(j = 0; j < COLS; j++) {
+                    ctx.fillStyle = rowcolours[grid[i][j]];
+                    rect((j * (SQUAREWIDTH + PADDING) + PADDING), (i * (SQUAREHEIGHT + PADDING) + PADDING), SQUAREWIDTH, SQUAREHEIGHT);
+            }
+        }
+    }
+    
+    function onMouseMove(evt) {
+        if (evt.pageX > canvasMinX && evt.pageX < canvasMaxX && evt.pageY > canvasMinY && evt.pageY < canvasMaxY) {
+            // get cursor position inside grid
+            mouseX = Math.floor((evt.pageX - (canvasMinX + 4*PADDING))/70);
+            if (mouseX < 0) {
+                mouseX = 0;
+            }
+            mouseY = Math.floor((evt.pageY - (canvasMinY + 4*PADDING))/70);
+            if (mouseY < 0) {
+                mouseY = 0;
+            }
+            
+            if(grid[mouseY][mouseX] == 0) {
+                grid[mouseY][mouseX] = 1;
+                clear();
+            }
+        }
+    }
+    
+    $(document).mousemove(onMouseMove);
+    
+    
+    
+    function draw() {
+        
+        drawgrid();
+    }
+    
+    init();
+    initgrid();
+    
+    //debug
+    // for (i=0; i<ROWS; i++) {
+        // for (j=0; j<COLS; j++) {
+            // document.write(i);
+            // document.write(j + " ");
+        // }
+        // document.write("<br>")
+    // }
+</script>
